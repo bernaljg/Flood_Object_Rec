@@ -150,10 +150,7 @@ def run_inference_on_image(image):
   Returns:
     Nothing
   """
-  if not tf.gfile.Exists(image):
-    tf.logging.fatal('File does not exist %s', image)
-  image_data = tf.gfile.FastGFile(image, 'rb').read()
-
+  
   # Creates graph from saved GraphDef.
   create_graph()
 
@@ -166,22 +163,25 @@ def run_inference_on_image(image):
     # 'DecodeJpeg/contents:0': A tensor containing a string providing JPEG
     #   encoding of the image.
     # Runs the softmax tensor by feeding the image_data as input to the graph.
+    useful_tags = ["car","truck","house","houseboat","fence"]
     softmax_tensor = sess.graph.get_tensor_by_name('softmax:0')
     predictions = sess.run(softmax_tensor,
-                           {'DecodeJpeg/contents:0': image_data})
+                           {'DecodeJpeg:0': image})
     predictions = np.squeeze(predictions)
 
     # Creates node ID --> English string lookup.
     node_lookup = NodeLookup()
 
     top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
-    prediction_dict = {}
+    objects = []
     for node_id in top_k:
-      human_string = node_lookup.id_to_string(node_id)
-      score = predictions[node_id]
-      print('%s (score = %.5f)' % (human_string, score))
-      prediction_dict[human_string] = score
-    return prediction_dict
+        human_string = node_lookup.id_to_string(node_id)
+        score = predictions[node_id]
+        print('%s (score = %.5f)' % (human_string, score))
+        for tag in useful_tags:
+            if score >= 0.6 and tag in human_string:
+                objects.append(tag)
+    return objects
 
 def maybe_download_and_extract():
   """Download and extract model tar file."""
