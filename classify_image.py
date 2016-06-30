@@ -163,6 +163,7 @@ def run_inference_on_image(image):
     # 'DecodeJpeg/contents:0': A tensor containing a string providing JPEG
     #   encoding of the image.
     # Runs the softmax tensor by feeding the image_data as input to the graph.
+    writer = tf.train.SummaryWriter('~/',sess.graph)
     useful_tags = ["car","truck","house","houseboat","fence"]
     softmax_tensor = sess.graph.get_tensor_by_name('softmax:0')
     predictions = sess.run(softmax_tensor,
@@ -177,10 +178,10 @@ def run_inference_on_image(image):
     for node_id in top_k:
         human_string = node_lookup.id_to_string(node_id)
         score = predictions[node_id]
-        print('%s (score = %.5f)' % (human_string, score))
+        #print('%s (score = %.5f)' % (human_string, score))
         for tag in useful_tags:
-            if score >= 0.6 and tag in human_string:
-                objects.append(tag)
+            if score >= 0.7 and tag in human_string:
+                objects.append((tag,human_string))
     return objects
 
 def maybe_download_and_extract():
