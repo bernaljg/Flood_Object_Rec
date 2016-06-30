@@ -22,23 +22,15 @@ from six.moves import urllib
 import classify_image as ci
 import tensorflow as tf
 
-def run_inference():
+def run_inference(filename):
     """Runs inference function defined in the tensorflow imagenet to find objects in flooding images folder images/"""
-    label_dict = {}
-    
-    for filename in glob.glob('images/*'):
-        image = Image.open(filename)
-        array_image = np.array(image)
-        objects = find_objects(array_image,3)
-        for obj in objects:
-            if obj in label_dict:
-                label_dict[obj].append(filename[7:])
-            else:
-                label_dict[obj] = [filename[7:]]
-                    
-    pickle.dump(label_dict, open("labels.p","wb"))
+    image = Image.open(filename)
+    array_image = np.array(image)
+    objects = find_objects_in_sections(array_image,3)
 
-def find_objects(image,num_crops):
+    return objects
+
+def find_objects_in_sections(image,num_crops):
     """Function that does finer grained object recognition by cropping the image into several sections"""
     r_step, c_step = image.shape[0]//num_crops, image.shape[1]//num_crops
     object_list = []
@@ -51,4 +43,46 @@ def find_objects(image,num_crops):
                 object_list.extend(inf_list)
     return object_list
 
-run_inference()
+label_dict = {}
+
+for i,filename in enumerate(glob.glob('images/*.jpg')):
+    if i%50 == 0:
+        print("Pickling...")
+        pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
+    try:
+        objects = run_inference(filename)
+        for obj in objects:
+            if obj[0] in label_dict:
+                label_dict[obj[0]].append((filename[7:],obj[1]))
+            else:
+                label_dict[obj] = [(filename[7:],obj[1])]  
+    except:
+        print(filename)
+
+for i,filename in enumerate(glob.glob('images/*.JPG')):
+    if i%50 == 0:
+        print("Pickling...")
+        pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
+    try:
+        objects = run_inference(filename)
+        for obj in objects:
+            if obj[0] in label_dict:
+                label_dict[obj[0]].append((filename[7:],obj[1]))
+            else:
+                label_dict[obj] = [(filename[7:],obj[1])]  
+    except:
+        print(filename)
+
+for i,filename in enumerate(glob.glob('images/*.jpeg')):
+    if i%50 == 0:
+        print("Pickling...")
+        pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
+    try:
+        objects = run_inference(filename)
+        for obj in objects:
+            if obj[0] in label_dict:
+                label_dict[obj[0]].append((filename[7:],obj[1]))
+            else:
+                label_dict[obj] = [(filename[7:],obj[1])]  
+    except:
+        print(filename)
