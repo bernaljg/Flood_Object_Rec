@@ -1,2 +1,3 @@
 images/
-label_pictures.p
+label_pictures.op
+*.pyc
