@@ -163,7 +163,7 @@ def run_inference_on_image(image):
     # 'DecodeJpeg/contents:0': A tensor containing a string providing JPEG
     #   encoding of the image.
     # Runs the softmax tensor by feeding the image_data as input to the graph.
-    writer = tf.train.SummaryWriter('~/',sess.graph)
+    #writer = tf.train.SummaryWriter('~/',sess.graph)
     useful_tags = ["car","truck","house","houseboat","fence"]
     softmax_tensor = sess.graph.get_tensor_by_name('softmax:0')
     predictions = sess.run(softmax_tensor,
