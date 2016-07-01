@@ -45,44 +45,17 @@ def find_objects_in_sections(image,num_crops):
 
 label_dict = {}
 
-for i,filename in enumerate(glob.glob('images/*.jpg')):
-    if i%10 == 0:
+for i,filename in enumerate(glob.glob('images/*')):
+    if i%1 == 0:
         print("Pickling...")
         pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
-    #try:
-        objects = run_inference(filename)
-    for obj in objects:
-        if obj[0] in label_dict:
-            label_dict[obj[0]].append((filename[7:],obj[1]))
-        else:
-            label_dict[obj] = [(filename[7:],obj[1])]  
-    #except:
-    print(filename)
-
-for i,filename in enumerate(glob.glob('images/*.JPG')):
-    if i%50 == 0:
-        print("Pickling...")
-        pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
+        print("Finished Image Number "+str(i))
     try:
         objects = run_inference(filename)
         for obj in objects:
             if obj[0] in label_dict:
                 label_dict[obj[0]].append((filename[7:],obj[1]))
             else:
-                label_dict[obj] = [(filename[7:],obj[1])]  
-    except:
-        print(filename)
-
-for i,filename in enumerate(glob.glob('images/*.jpeg')):
-    if i%50 == 0:
-        print("Pickling...")
-        pickle.dump(label_dict, open("labels.p","wb"),protocol = 2)
-    try:
-        objects = run_inference(filename)
-        for obj in objects:
-            if obj[0] in label_dict:
-                label_dict[obj[0]].append((filename[7:],obj[1]))
-            else:
-                label_dict[obj] = [(filename[7:],obj[1])]  
+                label_dict[obj[0]] = [(filename[7:],obj[1])]  
     except:
         print(filename)
