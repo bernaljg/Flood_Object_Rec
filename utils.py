@@ -1,10 +1,41 @@
 from Tkinter import *
 from PIL import ImageTk, Image
 import pickle
+import csv
 
 def load_labels():
     import pickle
     return pickle.load(open("labels.p","rb"))
+
+def assign_indices():
+    index_dict = {}
+    with open("image_filename.csv","rb") as csvfile:
+        csvreader = csv.reader(csvfile)
+        for example in csvreader:
+            filename = example[1][51:]
+            index_dict[filename] = example[0]
+
+    location_dict = {}
+    with open("flood_gps.csv","rb") as csvfile:
+        csvreader = csv.reader(csvfile)
+        for example in csvreader:
+            location_dict[example[0]] = (example[2],example[3])
+
+    labels = load_labels()
+    label_dict = {}
+    for obj in labels.keys():
+        file_list_w_object = labels[obj]
+        index_list = []
+        for image_tuple in file_list_w_object:
+            try:
+                filename = image_tuple[0]
+                index = index_dict[filename]
+                location = location_dict[index]
+                index_list.append([index, location])
+            except:
+                print(filename)
+        label_dict[obj] = index_list
+    pickle.dump(label_dict, open("labeled_indices.p","wb"), protocol = 2)
 
 def validate_labels():
     label_list = load_labels()
@@ -86,4 +117,4 @@ class Validate_Labels_GUI(Frame):
             self.denied[self.label] = [self.filename]
         self.quit()
 
-validate_labels()
+assign_indices()

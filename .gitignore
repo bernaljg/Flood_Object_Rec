@@ -1,3 +1,4 @@
 images/
-label_pictures.op
+label_pictures.p
+*.csv
 *.pyc
