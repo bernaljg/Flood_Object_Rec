@@ -5,7 +5,7 @@ import csv
 
 def load_labels():
     import pickle
-    return pickle.load(open("labels.p","rb"))
+    return pickle.load(open("new_labels.p","rb"))
 
 def assign_indices():
     index_dict = {}
@@ -36,6 +36,7 @@ def assign_indices():
                 print(filename)
         label_dict[obj] = index_list
     pickle.dump(label_dict, open("labeled_indices.p","wb"), protocol = 2)
+    return label_dict
 
 def validate_labels():
     label_list = load_labels()
@@ -116,5 +117,3 @@ class Validate_Labels_GUI(Frame):
         else:
             self.denied[self.label] = [self.filename]
         self.quit()
-
-assign_indices()
